@@ -34,6 +34,31 @@ RUN gu install python R ruby
 
 FROM debian:stable-slim
 
+
+
+
+FROM arm64v8/debian:stable-slim
+
+# Set environment variables
+ENV GRAAL_VERSION 22.3.0
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download and install GraalVM
+RUN curl -fsSL https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java11-linux-aarch64-$GRAAL_VERSION.tar.gz | tar -zxC /opt && \
+    ln -s /opt/graalvm-ce-java11-linux-aarch64-$GRAAL_VERSION /opt/graalvm
+
+# Set the GraalVM path
+ENV PATH /opt/graalvm/bin:$PATH
+
+# Install the GraalJS component
+RUN gu install js
+
+
 ARG GRAAL_VERSION
 ARG JDK_VERSION
 
